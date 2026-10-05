@@ -11,6 +11,7 @@ import {
 
 import {
   ArrowDownRight,
+  ArrowUp,
   ArrowUpRight,
   BriefcaseBusiness,
   CalendarDays,
@@ -2107,7 +2108,10 @@ export function PublicPortfolio() {
         className="fixed left-0 right-0 top-0 z-[60] h-1 bg-border/40"
         aria-hidden="true"
       >
-        <div className="h-full origin-left scale-x-0 bg-primary" />
+        <div
+          className="h-full bg-primary transition-[width] duration-100 motion-reduce:transition-none"
+          style={{ width: "var(--scroll-progress, 0%)" }}
+        />
       </div>
       <PublicNav
         data={data}
@@ -2141,9 +2145,10 @@ export function PublicPortfolio() {
             "conic-gradient(hsl(var(--primary)) var(--scroll-progress), hsl(var(--border)) var(--scroll-progress) 100%)",
         }}
         aria-label="Back to top"
+        title="Back to top"
       >
         <span className="flex h-full w-full items-center justify-center rounded-full bg-secondary hover:bg-primary hover:text-background">
-          ↑
+          <ArrowUp size={17} aria-hidden="true" />
         </span>
       </a>
       <Footer profile={data.profile} />

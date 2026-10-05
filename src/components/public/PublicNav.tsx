@@ -27,6 +27,7 @@ export function PublicNav({
 }) {
   const profile = data.profile;
   const [open, setOpen] = useState(false);
+  const menuButtonRef = useRef<HTMLButtonElement>(null);
   const [isNavVisible, setIsNavVisible] = useState(true);
   const lastScrollY = useRef(0);
   const [activeHash, setActiveHash] = useState("");
@@ -64,6 +65,20 @@ export function PublicNav({
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  useEffect(() => {
+    if (!open) return;
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key !== "Escape") return;
+      setOpen(false);
+      setOpenGroup(null);
+      menuButtonRef.current?.focus();
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [open]);
 
   useEffect(() => {
     const updateActiveHash = () => {
@@ -109,7 +124,11 @@ export function PublicNav({
             </span>
           </span>
         </Link>
-        <nav className={`${open ? "absolute left-0 top-[70px] flex w-full flex-col items-center gap-4 rounded-3xl border border-border bg-background p-6 shadow-xl" : "hidden"} lg:mr-4 lg:static lg:flex lg:max-w-[62vw] lg:flex-row lg:items-center lg:gap-6 lg:overflow-visible lg:border-0 lg:bg-transparent lg:p-0 lg:shadow-none`}>
+        <nav
+          id="primary-navigation"
+          aria-label="Primary navigation"
+          className={`${open ? "absolute left-0 top-[70px] flex max-h-[calc(100dvh-6.5rem)] w-full flex-col items-center gap-4 overflow-y-auto overscroll-contain rounded-3xl border border-border bg-background p-6 shadow-xl" : "hidden"} lg:mr-4 lg:static lg:flex lg:max-h-none lg:max-w-[62vw] lg:flex-row lg:items-center lg:gap-6 lg:overflow-visible lg:border-0 lg:bg-transparent lg:p-0 lg:shadow-none`}
+        >
           {groups.map((group) => {
             const isSingle = group.items.length === 1 && group.label === "Hire me";
             const groupActive = group.items.some(([href]) => activeHash === href);
@@ -171,7 +190,18 @@ export function PublicNav({
             </a>
           ))}
           <button type="button" onClick={onToggleTheme} className="rounded-md border border-border bg-secondary p-2 text-foreground transition-colors hover:border-primary hover:text-primary" aria-label={`Switch to ${isLight ? "dark" : "light"} theme`} data-testid="button-toggle-theme">{isLight ? <Moon size={16} /> : <Sun size={16} />}</button>
-          <button type="button" onClick={() => setOpen((value) => !value)} className="rounded-md bg-secondary p-2 text-foreground lg:hidden hover:text-primary" aria-label="Toggle navigation" data-testid="button-toggle-nav">{open ? <X size={20} /> : <Menu size={20} />}</button>
+          <button
+            ref={menuButtonRef}
+            type="button"
+            onClick={() => setOpen((value) => !value)}
+            className="rounded-md bg-secondary p-2 text-foreground hover:text-primary lg:hidden"
+            aria-label={open ? "Close navigation menu" : "Open navigation menu"}
+            aria-expanded={open}
+            aria-controls="primary-navigation"
+            data-testid="button-toggle-nav"
+          >
+            {open ? <X size={20} /> : <Menu size={20} />}
+          </button>
         </div>
       </div>
     </header>
